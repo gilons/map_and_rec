@@ -1,0 +1,15 @@
+{application, map_and_rec,
+ [{description, "An OTP library For inter conversion between maps and tuple"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, []},
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.

@@ -3,7 +3,7 @@
 %% map_and_rec: map_and_rec library's entry point.
 
 -export([order_map/4, to_map/2, to_rec/1]).
-%% This Path is the path to where there is record definition
+%% This Path is the path to the file in which your record definitions are found
 -include("path_to_your_file.hrl").
 
 -define(FIELDS(Rec_name),

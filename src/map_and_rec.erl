@@ -1,4 +1,5 @@
 -module(map_and_rec).
+
 -include("/home/fokam/Documents/projects/erlang/socket.hrl").
 
 %% map_and_rec: map_and_rec library's entry point.
@@ -9,6 +10,7 @@
 	fun () ->
 		Records = records(), maps:get(Rec_name, Records)
 	end()).
+
 %% API
 
 %%====================================================================
@@ -25,16 +27,14 @@ to_rec({Map, Record_name}) ->
     recorder(Map, ?FIELDS(Record_name), New_record, 2,
 	     Binary).
 
--spec to_map({atom(),atom(),tuple()},atom) -> map().
+-spec to_map({atom(), atom(), tuple()}, atom) -> map().
 
                                %%% tuple() represents where you will have to put your record
 
 to_map({Record_name, Record}, Option) ->
     Rec_list = tuple_to_list(Record),
-    New_rec_list = lists:delete(Record_name,
-					      Rec_list),
+    New_rec_list = lists:delete(Record_name, Rec_list),
     mapper(?FIELDS(Record_name), New_rec_list, #{}, Option).
-
 
 %%====================================================================
 %% Internal functions
@@ -69,9 +69,18 @@ recorder(Map, [Head | Tail], Record, Position,
       false ->
 	  case erlang:is_list(Value) of
 	    true ->
-		New_recod = erlang:insert_element(Position, Record,
-						to_rec_list(Value, Head, [])),
-		recorder(Map, Tail, New_recod, Position + 1, Binary);
+		[Head | _] = Value,
+		case erlang:is_map(Head) of
+		  true ->
+		      New_recod = erlang:insert_element(Position, Record,
+							to_rec_list(Value, Head,
+								    [])),
+		      recorder(Map, Tail, New_recod, Position + 1, Binary);
+		  false ->
+		      New_record = erlang:insert_element(Position, Record,
+							 Value),
+		      recorder(Map, Tail, New_record, Position + 1, Binary)
+		end;
 	    false ->
 		New_record = erlang:insert_element(Position, Record,
 						   Value),
@@ -86,42 +95,45 @@ to_rec_list([Head | Tail], Record_name, Acc) ->
 
 %% to_map internal implementation
 mapper([], [], Map, _Option) -> Map;
-mapper([Head_name | Tail_name],[Head_element | Tail_element], 
-		Map,Option) ->
-	New_head_name =	case Option of 
-		binary -> 
-			erlang:list_to_binary(erlang:atom_to_list(Head_name));
-		string ->  
-			erlang:atom_to_list(Head_name)
-	end,
-	case erlang:is_tuple(Head_element) of
-		true -> 
-			New_head_element = to_map({Head_name,Head_element},
-			Option),
-			New_map = maps:put(New_head_name,New_head_element,
-			Map),
-			mapper(Tail_name,Tail_element,New_map,Option);
-		false ->
-			case erlang:is_list(Head_element) of
-				true ->
-					New_head_element = to_map_list(Head_element,Head_name,
-					Option,[]),
-					New_map = maps:put(New_head_name,New_head_element,
-					Map),
-					mapper(Tail_name,Tail_element,New_map,Option);
-				false ->
-					New_map = maps:put(New_head_name,
-							Head_element, Map),
-					mapper(Tail_name, Tail_element, New_map, Option)
-					
-			end	
-	end.  
+mapper([Head_name | Tail_name],
+       [Head_element | Tail_element], Map, Option) ->
+    New_head_name = case Option of
+		      binary ->
+			  erlang:list_to_binary(erlang:atom_to_list(Head_name));
+		      string -> erlang:atom_to_list(Head_name)
+		    end,
+    case erlang:is_tuple(Head_element) of
+      true ->
+	  New_head_element = to_map({Head_name, Head_element},
+				    Option),
+	  New_map = maps:put(New_head_name, New_head_element,
+			     Map),
+	  mapper(Tail_name, Tail_element, New_map, Option);
+      false ->
+	  case erlang:is_list(Head_element) of
+	    true ->
+		[Head | _] = Head_element,
+		case erlang:is_tuple(Head) of
+		  true ->
+		      New_head_element = to_map_list(Head_element, Head_name,
+						     Option, []),
+		      New_map = maps:put(New_head_name, New_head_element,
+					 Map),
+		      mapper(Tail_name, Tail_element, New_map, Option);
+		  false ->
+		      New_map = maps:put(New_head_name, Head_element, Map),
+		      mapper(Tail_name, Tail_element, New_map, Option)
+		end;
+	    false ->
+		New_map = maps:put(New_head_name, Head_element, Map),
+		mapper(Tail_name, Tail_element, New_map, Option)
+	  end
+    end.
 
-to_map_list([],_,_,Acc) -> Acc;
-to_map_list([Head|Tail],Record_name,Option, Acc) ->
-	Map = to_map({Record_name,Head},Option),
-	to_map_list(Tail,Record_name,Option, Acc ++ [Map]).
-		
+to_map_list([], _, _, Acc) -> Acc;
+to_map_list([Head | Tail], Record_name, Option, Acc) ->
+    Map = to_map({Record_name, Head}, Option),
+    to_map_list(Tail, Record_name, Option, Acc ++ [Map]).
 
 %%Data
 records() ->
@@ -130,3 +142,4 @@ records() ->
       participant => record_info(fields, participant)}.
 
 %% End of Module.
+

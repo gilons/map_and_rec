@@ -1,10 +1,9 @@
 -module(map_and_rec).
-
--include("/home/fokam/Documents/projects/erlang/socket.hrl").
-
+-author("Me break").
 %% map_and_rec: map_and_rec library's entry point.
 
 -export([order_map/4, to_map/2, to_rec/1]).
+-include("/home/fokam/bleashup/src/bleashup_rec.hrl").
 
 -define(FIELDS(Rec_name),
 	fun () ->
@@ -39,6 +38,7 @@ to_map({Record_name, Record}, Option) ->
 %%====================================================================
 %% Internal functions
 %%====================================================================
+
 
 order_map(_, [], New_map, _) -> New_map;
 order_map(Old_map, [Head | Tail], Map, Binary) ->
@@ -135,11 +135,25 @@ to_map_list([Head | Tail], Record_name, Option, Acc) ->
     Map = to_map({Record_name, Head}, Option),
     to_map_list(Tail, Record_name, Option, Acc ++ [Map]).
 
-%%Data
+%%Todo : this data is to be provided by the programer or user
 records() ->
-    #{about => record_info(fields, about),
-      event => record_info(fields, event),
-      participant => record_info(fields, participant)}.
+    #{
+	  	about => record_info(fields, about),
+	  	current_event => record_info(fields, current_event),
+	  	update => record_info(fields,update),
+	  	location => record_info(fields,location),
+	  	period => record_info(fields,period),
+	  	presence => record_info(fields,presence),
+	  	updated_offline => record_info(fields,updated_offline),
+	  	time => record_info(fields,time),
+	  	date => record_info(fields,date),
+	  	new_event => record_info(fields,new_event),
+	  	past_event => record_info(fields,past_event),
+	  	updated => record_info(fields,updated),
+	  	error_message => record_info(fields,error_message),
+	  	succcess_message => record_info(fields,succcess_message),
+		participant => record_info(fields, participant),
+		session => record_info(fields,session)  
+	  }.
 
 %% End of Module.
-

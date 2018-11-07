@@ -3,7 +3,8 @@
 %% map_and_rec: map_and_rec library's entry point.
 
 -export([order_map/4, to_map/2, to_rec/1]).
--include("/home/fokam/bleashup/src/bleashup_rec.hrl").
+%% This Path is the path to where there is record definition
+-include("path_to_your_file.hrl").
 
 -define(FIELDS(Rec_name),
 	fun () ->
@@ -137,6 +138,9 @@ to_map_list([Head | Tail], Record_name, Option, Acc) ->
 
 %%Todo : this data is to be provided by the programer or user
 records() ->
+%% This data is for my own project that i will like to use the library in. 
+%% The programer is supposed to replace this by his own record data 
+%% following the pattern record_name => record_info(fields,record_name). 
     #{
 	  	about => record_info(fields, about),
 	  	current_event => record_info(fields, current_event),

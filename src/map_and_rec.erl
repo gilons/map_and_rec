@@ -70,8 +70,8 @@ recorder(Map, [Head | Tail], Record, Position,
       false ->
 	  case erlang:is_list(Value) of
 	    true ->
-		[Head | _] = Value,
-		case erlang:is_map(Head) of
+		[Temp_head | _] = Value,
+		case erlang:is_map(Temp_head) of
 		  true ->
 		      New_recod = erlang:insert_element(Position, Record,
 							to_rec_list(Value, Head,

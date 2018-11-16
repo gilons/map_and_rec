@@ -4,7 +4,7 @@
 
 -export([order_map/4, to_map/2, to_rec/1]).
 %% This Path is the path to the file in which your record definitions are found
--include("path_to_your_.hrl_file").
+-include("path_to_your_file_where_record_are_defined").
 
 -define(FIELDS(Rec_name),
 	fun () ->
@@ -157,7 +157,8 @@ records() ->
 	  	error_message => record_info(fields,error_message),
 	  	succcess_message => record_info(fields,succcess_message),
 		participant => record_info(fields, participant),
-		session => record_info(fields,session)  
+		session => record_info(fields,session),
+		invitation => record_info(fields,invitation)  
 	  }.
 
 %% End of Module.

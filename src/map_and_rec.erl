@@ -1,5 +1,5 @@
 -module(map_and_rec).
--author("Me break").
+-author("Mr break").
 %% map_and_rec: map_and_rec library's entry point.
 
 -export([order_map/4, to_map/2, to_rec/1]).
@@ -158,7 +158,8 @@ records() ->
 	  	succcess_message => record_info(fields,succcess_message),
 		participant => record_info(fields, participant),
 		session => record_info(fields,session),
-		invitation => record_info(fields,invitation)  
+		invitation => record_info(fields,invitation),  
+		user => record_info(fields,user)
 	  }.
 
 %% End of Module.

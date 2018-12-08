@@ -159,7 +159,7 @@ records() ->
 		participant => record_info(fields, participant),
 		session => record_info(fields,session),
 		invitation => record_info(fields,invitation),  
-		user => record_info(fields,user)
+		users => record_info(fields,users)
 	  }.
 
 %% End of Module.

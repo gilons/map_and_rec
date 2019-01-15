@@ -1,10 +1,13 @@
 -module(map_and_rec).
--author("Mr break").
+
+-author("Me break").
+
 %% map_and_rec: map_and_rec library's entry point.
 
--export([order_map/4, to_map/2, to_rec/1]).
+-export([order_map/4, to_map/2, to_rec/1,to_rec_list/2,to_map_list/3]).
+
 %% This Path is the path to the file in which your record definitions are found
--include("path_to_your_file_where_record_are_defined").
+-include("path-to_your_record_files").
 
 -define(FIELDS(Rec_name),
 	fun () ->
@@ -16,6 +19,10 @@
 %%====================================================================
 %% API functions
 %%====================================================================
+to_rec_list([],_) -> [];
+to_rec_list([Head|Tail],RecName) ->
+	[to_rec({Head,RecName})] ++
+	to_rec_list(Tail,RecName).
 -spec to_rec({map(), atom()}) -> tuple().
 
 to_rec({Map, Record_name}) ->
@@ -26,6 +33,10 @@ to_rec({Map, Record_name}) ->
     New_record = {Record_name},
     recorder(Map, ?FIELDS(Record_name), New_record, 2,
 	     Binary).
+
+to_map_list([],_,_) -> [];
+to_map_list([Head|Tail],RecName,Action) ->
+	[to_map({RecName,Head},Action)] ++ to_map_list(Tail,RecName,Action).
 
 -spec to_map({atom(), atom(), tuple()}, atom) -> map().
 
@@ -39,7 +50,6 @@ to_map({Record_name, Record}, Option) ->
 %%====================================================================
 %% Internal functions
 %%====================================================================
-
 
 order_map(_, [], New_map, _) -> New_map;
 order_map(Old_map, [Head | Tail], Map, Binary) ->
@@ -95,7 +105,7 @@ to_rec_list([Head | Tail], Record_name, Acc) ->
     to_rec_list(Tail, Record_name, Acc ++ [Rec]).
 
 %% to_map internal implementation
-mapper([], [], Map, _Option) -> Map;
+mapper([], _, Map, _Option) -> Map;
 mapper([Head_name | Tail_name],
        [Head_element | Tail_element], Map, Option) ->
     New_head_name = case Option of
@@ -105,7 +115,8 @@ mapper([Head_name | Tail_name],
 		    end,
     case erlang:is_tuple(Head_element) of
       true ->
-	  New_head_element = to_map({Head_name, Head_element},
+	  [Head|_] = erlang:tuple_to_list(Head_element),
+	  New_head_element = to_map({Head, Head_element},
 				    Option),
 	  New_map = maps:put(New_head_name, New_head_element,
 			     Map),
@@ -138,28 +149,20 @@ to_map_list([Head | Tail], Record_name, Option, Acc) ->
 
 %%Todo : this data is to be provided by the programer or user
 records() ->
-%% This data is for my own project that i will like to use the library in. 
-%% The programer is supposed to replace this by his own record data 
-%% following the pattern record_name => record_info(fields,record_name). 
-    #{
-	  	about => record_info(fields, about),
-	  	current_event => record_info(fields, current_event),
-	  	update => record_info(fields,update),
-	  	location => record_info(fields,location),
-	  	period => record_info(fields,period),
-	  	presence => record_info(fields,presence),
-	  	updated_offline => record_info(fields,updated_offline),
-	  	time => record_info(fields,time),
-	  	date => record_info(fields,date),
-	  	new_event => record_info(fields,new_event),
-	  	past_event => record_info(fields,past_event),
-	  	updated => record_info(fields,updated),
-	  	error_message => record_info(fields,error_message),
-	  	succcess_message => record_info(fields,succcess_message),
-		participant => record_info(fields, participant),
-		session => record_info(fields,session),
-		invitation => record_info(fields,invitation),  
-		users => record_info(fields,users)
-	  }.
+    %% This data is for my own project that i will like to use the library in.
+    %% The programer is supposed to replace this by his own record data
+    %% following the pattern record_name => record_info(fields,record_name).
+    #{about => record_info(fields, about),
+      current_event => record_info(fields, current_event),
+      update => record_info(fields, update),
+      location => record_info(fields, location),
+      period => record_info(fields, period),
+      presence => record_info(fields, presence)
+	      ...
+              ...
+              ...
+     )}.
 
 %% End of Module.
+
+

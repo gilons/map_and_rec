@@ -10,7 +10,7 @@
 %% This Path is the path to the file in which your record definitions are found
 %%-include("/home/fokam/bleashup/src/bleashup_rec.hrl").
 %%---EX---%%
--include("../../../../../src/bleashup_rec.hrl").
+-include("~/../../../../../src/bleashup_rec.hrl").
 
 -define(FIELDS(Rec_name),
 	fun () ->
@@ -187,7 +187,7 @@ records() ->
      %% .
      %% .
      %% .
-     %% .}.
+    }.
 	
 
 %% End of Module.

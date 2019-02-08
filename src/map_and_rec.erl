@@ -7,7 +7,9 @@
 -export([order_map/4, to_map/2, to_rec/1,to_rec_list/2,to_map_list/3]).
 
 %% This Path is the path to the file in which your record definitions are found
--include("path-to_your_record_files").
+%%-include("/home/fokam/bleashup/src/bleashup_rec.hrl").
+%%---EX---%%
+-include("../../../../../src/bleashup_rec.hrl").
 
 -define(FIELDS(Rec_name),
 	fun () ->

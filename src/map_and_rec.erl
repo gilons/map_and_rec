@@ -4,7 +4,8 @@
 
 %% map_and_rec: map_and_rec library's entry point.
 
--export([order_map/4, to_map/2, to_rec/1,to_rec_list/2,to_map_list/3]).
+-export([order_map/4, to_map/2, to_map_list/3, to_rec/1,
+	 to_rec_list/2]).
 
 %% This Path is the path to the file in which your record definitions are found
 %%-include("/home/fokam/bleashup/src/bleashup_rec.hrl").
@@ -21,10 +22,10 @@
 %%====================================================================
 %% API functions
 %%====================================================================
-to_rec_list([],_) -> [];
-to_rec_list([Head|Tail],RecName) ->
-	[to_rec({Head,RecName})] ++
-	to_rec_list(Tail,RecName).
+to_rec_list([], _) -> [];
+to_rec_list([Head | Tail], RecName) ->
+    [to_rec({Head, RecName})] ++ to_rec_list(Tail, RecName).
+
 -spec to_rec({map(), atom()}) -> tuple().
 
 to_rec({Map, Record_name}) ->
@@ -33,12 +34,14 @@ to_rec({Map, Record_name}) ->
     Binary = erlang:is_binary(Head),
     % New_map = order_map(Map, Record_fields, maps:new(),Binary),
     New_record = {Record_name},
-    recorder(Map, ?FIELDS(Record_name), New_record, 2,
-	     Binary).
+    Res = recorder(Map, ?FIELDS(Record_name), New_record, 2,
+		   Binary),
+    Res.
 
-to_map_list([],_,_) -> [];
-to_map_list([Head|Tail],RecName,Action) ->
-	[to_map({RecName,Head},Action)] ++ to_map_list(Tail,RecName,Action).
+to_map_list([], _, _) -> [];
+to_map_list([Head | Tail], RecName, Action) ->
+    [to_map({RecName, Head}, Action)] ++
+      to_map_list(Tail, RecName, Action).
 
 -spec to_map({atom(), atom(), tuple()}, atom) -> map().
 
@@ -117,9 +120,8 @@ mapper([Head_name | Tail_name],
 		    end,
     case erlang:is_tuple(Head_element) of
       true ->
-	  [Head|_] = erlang:tuple_to_list(Head_element),
-	  New_head_element = to_map({Head, Head_element},
-				    Option),
+	  [Head | _] = erlang:tuple_to_list(Head_element),
+	  New_head_element = to_map({Head, Head_element}, Option),
 	  New_map = maps:put(New_head_name, New_head_element,
 			     Map),
 	  mapper(Tail_name, Tail_element, New_map, Option);
@@ -159,12 +161,33 @@ records() ->
       update => record_info(fields, update),
       location => record_info(fields, location),
       period => record_info(fields, period),
-      presence => record_info(fields, presence)
-	      ...
-              ...
-              ...
-     )}.
+      presence => record_info(fields, presence),
+      updated_offline => record_info(fields, updated_offline),
+      time => record_info(fields, time),
+      new_time => record_info(fields, time),
+      new_date => record_info(fields, date),
+      date => record_info(fields, date),
+      new_event => record_info(fields, new_event),
+      past_event => record_info(fields, past_event),
+      updated => record_info(fields, updated),
+      participant => record_info(fields, participant),
+      session => record_info(fields, session),
+      invitation => record_info(fields, invitation),
+      users => record_info(fields, users),
+      reschedule => record_info(fields, reschedule),
+      reschedules => record_info(fields, reschedules),
+      updates => record_info(fields, updates),
+      about_update => record_info(fields, about_update),
+      participant_update =>
+	  record_info(fields, participant_update),
+      period_update => record_info(fields, period_update),
+      location_update =>
+	  record_info(fields, location_update)
+     %% .
+     %% .
+     %% .
+     %% .
+     %% .}.
+	
 
 %% End of Module.
-
-
